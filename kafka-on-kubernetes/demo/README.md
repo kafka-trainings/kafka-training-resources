@@ -81,19 +81,21 @@ kubectl exec kafka-toolbox -- kafka-topics --list
 
 → Not empty
 
-## Produce something to topic
+## Producing and Consuming
+
+### Produce something to topic
 
 ```sh
 kubectl exec -it kafka-toolbox -- kafka-console-producer --topic topic1
 ```
 
-## Consume from the same topic
+### Consume from the same topic
 
 ```sh
 kubectl exec kafka-toolbox -- kafka-console-consumer --topic topic1
 ```
 
-## Consume with partitions
+### Consume with partitions
 
 Open 4 terminal windows:
 
@@ -116,10 +118,22 @@ Produce more stuff:
 kubectl exec -it kafka-toolbox -- kafka-console-producer --topic topic1
 ```
 
-## Partitioning by key
+### Partitioning by key
 
 If key is given, Kafka Console Producer uses the default partitioner.
 
 ```sh
 kubectl exec -it kafka-toolbox -- kafka-console-producer --topic topic1 --property "parse.key=true" --property "key.separator=:"
+```
+
+## Two-way sync of Topics
+
+```sh
+kubectl exec kafka-toolbox -- \
+  kafka-topics --create --topic test2 \
+  --partitions 3 --replication-factor 1
+```
+
+```sh
+kubectl get kafkatopics
 ```
