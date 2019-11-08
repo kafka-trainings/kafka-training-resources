@@ -1,0 +1,190 @@
+version: '3.3'
+services:
+  dps:
+    image: defreitas/dns-proxy-server
+    hostname: dns.mageddo
+    networks:
+      - kafka
+    volumes:
+      - /etc/resolv.conf:/etc/resolv.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+  zk-1:
+    image: confluentinc/cp-zookeeper:5.3.1
+    container_name: zk-1
+    hostname: zk-1
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
+      ZOOKEEPER_JMX_PORT: 9999
+    networks:
+      - kafka
+    volumes:
+      - volume-zk-1:/var/lib/zookeeper/data
+
+  zk-2:
+    image: confluentinc/cp-zookeeper:5.3.1
+    container_name: zk-2
+    hostname: zk-2
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
+      ZOOKEEPER_JMX_PORT: 9999
+    networks:
+      - kafka
+    volumes:
+      - volume-zk-2:/var/lib/zookeeper/data
+
+  zk-3:
+    image: confluentinc/cp-zookeeper:5.3.1
+    container_name: zk-3
+    hostname: zk-3
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zk-1:2888:3888;zk-2:2888:3888;zk-3:2888:3888
+      ZOOKEEPER_JMX_PORT: 9999
+    networks:
+      - kafka
+    volumes:
+      - volume-zk-3:/var/lib/zookeeper/data
+
+  kafka-1:
+    image: confluentinc/cp-kafka:5.3.1
+    container_name: kafka-1
+    hostname: kafka-1
+    networks:
+      - kafka
+    depends_on:
+      - zk-1
+      - zk-2
+      - zk-3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zk-1:2181,zk-1:2181,zk-2:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9999
+    volumes:
+      - volume-kafka-1:/var/lib/kafka/data
+
+  kafka-1-jmx-exporter:
+    container_name: kafka-1-jmx-exporter
+    hostname: kafka-1-jmx-exporter
+    image: sscaling/jmx-prometheus-exporter
+    environment:
+      - SERVICE_PORT=80
+      - CONFIG_YML=/config/kafka-1-jmx.yml
+    volumes:
+      - ./prometheus-config/:/config/
+    networks:
+      - kafka
+    depends_on:
+      - kafka-1
+
+  kafka-2:
+    image: confluentinc/cp-kafka:5.3.1
+    container_name: kafka-2
+    hostname: kafka-2
+    networks:
+      - kafka
+    depends_on:
+      - zk-1
+      - zk-2
+      - zk-3
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zk-1:2181,zk-1:2181,zk-2:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9999
+    volumes:
+      - volume-kafka-2:/var/lib/kafka/data
+
+  kafka-2-jmx-exporter:
+    container_name: kafka-2-jmx-exporter
+    hostname: kafka-2-jmx-exporter
+    image: sscaling/jmx-prometheus-exporter
+    environment:
+      - SERVICE_PORT=80
+      - CONFIG_YML=/config/kafka-2-jmx.yml
+    volumes:
+      - ./prometheus-config/:/config/
+    networks:
+      - kafka
+    depends_on:
+      - kafka-2
+
+  kafka-3:
+    image: confluentinc/cp-kafka:5.3.1
+    container_name: kafka-3
+    hostname: kafka-3
+    networks:
+      - kafka
+    depends_on:
+      - zk-1
+      - zk-2
+      - zk-3
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zk-1:2181,zk-1:2181,zk-2:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: 'false'
+      KAFKA_JMX_PORT: 9999
+    volumes:
+      - volume-kafka-3:/var/lib/kafka/data
+
+  kafka-3-jmx-exporter:
+    container_name: kafka-3-jmx-exporter
+    hostname: kafka-3-jmx-exporter
+    image: sscaling/jmx-prometheus-exporter
+    environment:
+      - SERVICE_PORT=80
+      - CONFIG_YML=/config/kafka-3-jmx.yml
+    volumes:
+      - ./prometheus-config/:/config/
+    networks:
+      - kafka
+    depends_on:
+      - kafka-3
+
+  prometheus:
+    container_name: prometheus
+    hostname: prometheus
+    networks:
+      - kafka
+    image: prom/prometheus:0.18.0
+    volumes:
+      - ./prometheus-config/:/etc/prometheus
+      - prometheus:/prometheus
+
+  grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana:3.0.1
+    networks:
+      - kafka
+    volumes:
+      - graf-db:/var/lib/grafana
+
+networks:
+  kafka:
+volumes:
+  volume-kafka-1:
+  volume-kafka-2:
+  volume-kafka-3:
+  volume-zk-1:
+  volume-zk-2:
+  volume-zk-3:
+  graf-db:
+  prometheus:
