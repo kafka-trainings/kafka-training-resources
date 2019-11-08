@@ -171,12 +171,21 @@ services:
   grafana:
     container_name: grafana
     hostname: grafana
-    image: grafana/grafana:3.0.1
+    image: grafana/grafana:6.4.4
     networks:
       - kafka
     volumes:
-      - graf-db:/var/lib/grafana
+      - grafana:/var/lib/grafana
 
+  toolbox:
+    container_name: toolbox
+    image: itadventurer/kafka-toolbox:kafka-2.3.0
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_ZOOKEEPER: "zk-1:2181,zk-2:2181,zk-3:2181"
+    command: ["sleep", "infinity"]
+    networks:
+      - kafka
 networks:
   kafka:
 volumes:
@@ -186,5 +195,5 @@ volumes:
   volume-zk-1:
   volume-zk-2:
   volume-zk-3:
-  graf-db:
+  grafana:
   prometheus:
