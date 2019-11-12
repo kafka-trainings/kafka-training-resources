@@ -2,10 +2,15 @@ global:
   scrape_interval:     10s
   evaluation_interval: 10s
 scrape_configs:
-  - job_name: 'kafka'
+  - job_name: 'kafka-1'
     scrape_interval: 10s
     target_groups:
-      - targets: [
-        'kafka-1-jmx-exporter:80',
-        'kafka-2-jmx-exporter:80',
-        'kafka-3-jmx-exporter:80',]
+      - targets: ['kafka-1-jmx-exporter:80']
+  - job_name: 'kafka-2'
+    scrape_interval: 10s
+    target_groups:
+      - targets: ['kafka-2-jmx-exporter:80']
+  - job_name: 'kafka-3'
+    scrape_interval: 10s
+    target_groups:
+      - targets: ['kafka-3-jmx-exporter:80']

@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1573228894384,
+  "iteration": 1573560818629,
   "links": [],
   "panels": [
     {
@@ -763,7 +763,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -848,7 +848,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -933,7 +933,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_messagesin_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_messagesin_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1018,7 +1018,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1086,7 +1086,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesin_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -1096,7 +1096,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "-sum(irate(kafka_server_brokertopicmetrics_bytesout_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1189,7 +1189,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_messagesin_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_messagesin_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Total Incoming Messages Rate",
@@ -1280,14 +1280,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Total Produce Request Rate",
           "refId": "A"
         },
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_failedproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_failedproducerequests_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 1,
@@ -1353,11 +1353,15 @@
       },
       "id": 56,
       "legend": {
+        "alignAsTable": false,
         "avg": false,
         "current": false,
         "max": false,
         "min": false,
+        "rightSide": false,
         "show": true,
+        "sort": "current",
+        "sortDesc": true,
         "total": false,
         "values": false
       },
@@ -1379,14 +1383,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalfetchrequests_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_totalfetchrequests_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Fetch Request Rate",
           "refId": "A"
         },
         {
-          "expr": "  sum(irate(kafka_server_brokertopicmetrics_failedfetchrequests_total{topic=~\"$kafka_topic\",topic!=\"\"}[1m]))",
+          "expr": "sum(irate(kafka_server_brokertopicmetrics_failedfetchrequests_total{topic=~\"$kafka_topic\",topic!=\"\",job=~\"$kafka_broker\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Failed Fetch Request Rate",
@@ -1444,8 +1448,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 7,
+        "w": 24,
         "x": 0,
         "y": 25
       },
@@ -1477,10 +1481,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kafka_network_socketserver_networkprocessoravgidle_percent{}*100",
+          "expr": "kafka_network_socketserver_networkprocessoravgidlepercent{job=~\"$kafka_broker\"}*100",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{kubernetes_pod_name}}",
+          "legendFormat": "{{job}}",
           "refId": "A"
         }
       ],
@@ -1531,105 +1535,13 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "Request Handler Avg Idle Percent",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 25
-      },
-      "id": 62,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "paceLength": 10,
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "kafka_server_kafkarequesthandlerpool_requesthandleravgidle_percent{}*100",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "{{kubernetes_pod_name}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Request Handler Avg Idle Percent",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "percent",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 32
       },
       "id": 91,
       "legend": {
@@ -1659,7 +1571,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kafka_log_log_size{topic=~\"$kafka_topic\",partition=~\"$kafka_partition\"}",
+          "expr": "kafka_log_log_size{topic=~\"$kafka_topic\",partition=~\"$kafka_partition\",job=~\"$kafka_broker\"}",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -1709,7 +1621,7 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "10s",
   "schemaVersion": 20,
   "style": "dark",
   "tags": [
@@ -1721,19 +1633,21 @@
         "allValue": ".*",
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Prometheus",
-        "definition": "",
+        "definition": "label_values(kafka_server_replicamanager_leadercount,job)",
         "hide": 0,
         "includeAll": true,
         "label": "Broker",
-        "multi": false,
+        "multi": true,
         "name": "kafka_broker",
         "options": [],
-        "query": "query_result(kafka_server_replicamanager_leadercount)",
+        "query": "label_values(kafka_server_replicamanager_leadercount,job)",
         "refresh": 1,
-        "regex": "/.*statefulset_kubernetes_io_pod_name=\"$strimzi_cluster_name-([^\"]*).*/",
+        "regex": "",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
@@ -1746,14 +1660,16 @@
         "allValue": ".+",
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Prometheus",
         "definition": "",
         "hide": 0,
         "includeAll": true,
         "label": "Topic",
-        "multi": false,
+        "multi": true,
         "name": "kafka_topic",
         "options": [],
         "query": "query_result(kafka_cluster_partition_replicascount{})",
@@ -1771,7 +1687,9 @@
         "allValue": ".*",
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -1826,5 +1744,5 @@
   "timezone": "",
   "title": "Kafka",
   "uid": "kafka",
-  "version": 1
+  "version": 3
 }
