@@ -186,6 +186,8 @@ services:
     command: ["sleep", "infinity"]
     networks:
       - kafka
+    volumes:
+      - ./toolbox/:/toolbox/
 networks:
   kafka:
 volumes:
