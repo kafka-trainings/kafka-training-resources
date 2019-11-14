@@ -188,6 +188,28 @@ services:
       - kafka
     volumes:
       - ./toolbox/:/toolbox/
+
+  connect:
+    container_name: connect
+    image: confluentinc/cp-kafka-connect:5.3.1
+    hostname: connect
+    networks:
+      - kafka
+    volumes:
+      - ./connect:/connect/
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      CONNECT_REST_PORT: 80
+      CONNECT_GROUP_ID: "kafka-connect"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+      CONNECT_PLUGIN_PATH: /usr/share/java
 networks:
   kafka:
 volumes:
