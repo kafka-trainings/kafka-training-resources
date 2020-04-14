@@ -163,6 +163,8 @@ services:
     hostname: prometheus
     networks:
       - kafka
+    ports:
+      - 9090:9090
     image: prom/prometheus:0.18.0
     volumes:
       - ./prometheus-config/:/etc/prometheus
