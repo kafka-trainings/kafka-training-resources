@@ -199,6 +199,8 @@ services:
     hostname: connect
     networks:
       - kafka
+    ports:
+      - 8083:8083
     volumes:
       - ./connect:/connect/
     environment:
