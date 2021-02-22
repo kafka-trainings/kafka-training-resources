@@ -18,7 +18,7 @@ export KAFKA_OPTS=" -javaagent:$DIR/javaagent.jar=8082:$DIR/config/kafka-javaage
 kafka-server-start.sh -daemon "$DIR"/config/kafka2.properties
 export KAFKA_OPTS=" -javaagent:$DIR/javaagent.jar=8083:$DIR/config/kafka-javaagent.yaml"
 kafka-server-start.sh -daemon "$DIR"/config/kafka3.properties
-UNSET KAFKA_OPTS
+unset KAFKA_OPTS
 echo "Kafka started. Waiting 15s to finish booting"
 sleep 15
 echo -n "Testing Connection…"
