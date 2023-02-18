@@ -8,11 +8,11 @@ if [[ ! -d "/home/user/training/data/kafka1" ]]; then
   kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c /home/user/training/config/kafka3.properties
 fi
 
-export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=8081:/home/user/training/config/kafka-javaagent.yaml"
+export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=9101:/home/user/training/config/kafka-javaagent.yaml"
 kafka-server-start.sh -daemon /home/user/training/config/kafka1.properties
-export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=8082:/home/user/training/config/kafka-javaagent.yaml"
+export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=9102:/home/user/training/config/kafka-javaagent.yaml"
 kafka-server-start.sh -daemon /home/user/training/config/kafka2.properties
-export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=8083:/home/user/training/config/kafka-javaagent.yaml"
+export KAFKA_OPTS=" -javaagent:/home/user/training/javaagent.jar=9103:/home/user/training/config/kafka-javaagent.yaml"
 kafka-server-start.sh -daemon /home/user/training/config/kafka3.properties
 unset KAFKA_OPTS
 echo "Kafka started. Waiting 15s to finish booting"

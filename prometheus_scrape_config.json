@@ -1,0 +1,26 @@
+[
+  {
+    "targets": [
+      "localhost:9101"
+    ],
+    "labels": {
+      "job": "kafka-1"
+    }
+  },
+  {
+    "targets": [
+      "localhost:9102"
+    ],
+    "labels": {
+      "job": "kafka-2"
+    }
+  },
+  {
+    "targets": [
+      "localhost:9103"
+    ],
+    "labels": {
+      "job": "kafka-3"
+    }
+  }
+]
