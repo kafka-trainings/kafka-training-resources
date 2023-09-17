@@ -9,5 +9,7 @@ services:
       SPRING_SECURITY_USER_NAME: user
       SPRING_SECURITY_USER_PASSWORD: kafkaisfun
       SERVER_PORT: 7005
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://localhost:8090
     network_mode: host
     restart: always
