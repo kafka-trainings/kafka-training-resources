@@ -1,0 +1,7 @@
+{
+  "bootstrap_servers": "localhost:9092",
+  "topic": "customer_transactions",
+  "enable_idempotence": "true",
+  "transactional_id": "prod-1",
+  "acks": "-1"
+}

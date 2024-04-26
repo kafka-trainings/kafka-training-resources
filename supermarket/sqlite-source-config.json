@@ -1,0 +1,14 @@
+
+{
+  "name": "source-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "connection.url": "jdbc:sqlite:/home/user/training/connect/supplier.db",
+    "table.whitelist": "costs",
+    "mode": "incrementing",
+    "incrementing.column.name": "unique_id",
+    "table.types": "TABLE",
+    "topic.prefix": "supplier_",
+    "batch.size": 1000
+    }
+}

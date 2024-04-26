@@ -1,0 +1,12 @@
+apple, 0.30
+banana, 0.50
+chicken, 5.00
+milk, 1.20
+bread, 2.50
+eggs, 3.00
+cheese, 4.00
+rice, 1.80
+pasta, 2.00
+tomato, 0.25
+lettuce, 1.00
+onion, 0.75

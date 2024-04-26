@@ -1,0 +1,8 @@
+{
+  "bootstrap_servers": "localhost:9092",
+  "topics": ["customer_transactions", "sqlite_supplier_costs"],
+  "group_id": "earnings_calculator",
+  "enable_auto_commit": false,
+  "auto_offset_reset": "earliest",
+  "isolation_level": "read_committed"
+}
