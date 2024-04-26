@@ -1,4 +1,3 @@
-unique_id,product_id,product_name,supermarket_id,cost_per_item
 00,0,apple,0,0.27
 01,0,apple,1,0.26
 02,0,apple,2,0.25
