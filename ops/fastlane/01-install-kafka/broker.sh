@@ -24,5 +24,5 @@ broker.id=$ID
 listeners=PLAINTEXT://$IP.$ID:9092,CONTROLLER://$IP.$ID:9192
 EOF
 
-kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
-kafka-server-start.sh -daemon ~/config/kafka.properties
+/home/user/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
+/home/user/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
