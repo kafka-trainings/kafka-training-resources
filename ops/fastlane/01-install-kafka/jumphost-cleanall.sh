@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
+echo "Updating git repos on the brokers…"
+ssh "$IP".1 "cd /home/user/training/ && git pull"
+ssh "$IP".2 "cd /home/user/training/ && git pull"
+ssh "$IP".3 "cd /home/user/training/ && git pull"
+
 # Query the user to confirm the deletion
 echo "Are you sure you want to delete all Kafka data and configurations? (YES/NO)"
 read CONFIRM
