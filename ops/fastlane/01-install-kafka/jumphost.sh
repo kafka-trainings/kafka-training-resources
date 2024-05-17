@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
 
+# check
 echo "Updating known hosts…"
-ssh-keyscan -H "$IP".1 >> ~/.ssh/known_hosts
-ssh-keyscan -H "$IP".2 >> ~/.ssh/known_hosts
-ssh-keyscan -H "$IP".3 >> ~/.ssh/known_hosts
+# Do the keyscan only if the key is not already in the known_hosts file
+if ! grep -q "$IP.1" ~/.ssh/known_hosts; then
+  ssh-keyscan -H "$IP".1 >> ~/.ssh/known_hosts
+fi
+if ! grep -q "$IP.2" ~/.ssh/known_hosts; then
+  ssh-keyscan -H "$IP".2 >> ~/.ssh/known_hosts
+fi
+if ! grep -q "$IP.3" ~/.ssh/known_hosts; then
+  ssh-keyscan -H "$IP".3 >> ~/.ssh/known_hosts
+fi
 
 echo "Updating git repos on the brokers…"
 ssh "$IP".1 "cd /home/user/training/ && git pull"

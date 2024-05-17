@@ -25,7 +25,7 @@ listeners=PLAINTEXT://$IP.$ID:9092,CONTROLLER://$IP.$ID:9192
 EOF
 )
 
-if ! grep -Fq "$CONFIG_LINES" "$CONFIG_FILE"; then
+if ! grep -Fq "$CONFIG_LINES" ~/config/kafka.properties; then
   echo "$CONFIG_LINES" >> ~/config/kafka.properties
   echo "Configured Kafka properties."
 else
