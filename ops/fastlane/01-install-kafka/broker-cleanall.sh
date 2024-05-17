@@ -8,6 +8,6 @@ if [ "$1" != "YES" ]; then
 fi
 
 echo "Stopping Kafka broker…"
-~/kafka/bin/kafka-server-stop.sh
+~/kafka/bin/kafka-server-stop.sh || true
 echo "Cleaning Kafka storage and configs…"
 rm -r ~/kafka-data ~/config/kafka.properties
