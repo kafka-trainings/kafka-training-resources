@@ -26,13 +26,13 @@ EOF
 )
 
 if ! grep -Fq "$CONFIG_LINES" "$CONFIG_FILE"; then
-  echo "$CONFIG_LINES" >> "$CONFIG_FILE"
+  echo "$CONFIG_LINES" >> ~/config/kafka.properties
   echo "Configured Kafka properties."
 else
   echo "Kafka properties already configured."
 fi
 
 echo "Formatting Kafka storage…"
-/home/user/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
+~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
 echo "Starting Kafka broker…"
-/home/user/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
+~/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
