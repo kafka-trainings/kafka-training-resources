@@ -26,3 +26,10 @@ echo "Configuring Kafka on the brokers…"
 ssh "$IP".1 "/home/user/training/ops/fastlane/01-install-kafka/broker.sh $CLUSTER_ID"
 ssh "$IP".2 "/home/user/training/ops/fastlane/01-install-kafka/broker.sh $CLUSTER_ID"
 ssh "$IP".3 "/home/user/training/ops/fastlane/01-install-kafka/broker.sh $CLUSTER_ID"
+
+echo "Kafka started. Waiting 15s to finish booting"
+sleep 20
+echo -n "Testing Connection…"
+kafka-broker-api-versions.sh --bootstrap-server $IP.1:9092 >/dev/null
+echo -e "\tOK"
+echo "Happy Hacking!"

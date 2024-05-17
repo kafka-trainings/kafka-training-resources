@@ -13,7 +13,7 @@ cd ~/config
 cp ~/kafka/config/server.properties ~/config/kafka.properties
 ID=$(hostname | grep -oE '[0-9]+$')
 
-cat <<EOF >> ~/config/kafka.properties
+CONFIG_LINES=$(cat &lt;&lt;EOF
 log.dirs=/home/user/kafka-data
 process.roles=broker,controller
 controller.listener.names=CONTROLLER
@@ -23,6 +23,16 @@ controller.quorum.voters=1@$IP.1:9192,2@$IP.2:9192,3@$IP.3:9192
 broker.id=$ID
 listeners=PLAINTEXT://$IP.$ID:9092,CONTROLLER://$IP.$ID:9192
 EOF
+)
 
+if ! grep -Fq "$CONFIG_LINES" "$CONFIG_FILE"; then
+  echo "$CONFIG_LINES" >> "$CONFIG_FILE"
+  echo "Configured Kafka properties."
+else
+  echo "Kafka properties already configured."
+fi
+
+echo "Formatting Kafka storage…"
 /home/user/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
+echo "Starting Kafka broker…"
 /home/user/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
