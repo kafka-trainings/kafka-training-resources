@@ -14,24 +14,29 @@ cd ~/config
 cp ~/kafka/config/server.properties ~/config/kafka.properties
 ID=$(hostname | grep -oE '[0-9]+$')
 
-CONFIG_LINES=$(cat <<EOF
-log.dirs=/home/user/kafka-data
-process.roles=broker,controller
-controller.listener.names=CONTROLLER
-listener.security.protocol.map=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-controller.quorum.voters=1@$IP.1:9192,2@$IP.2:9192,3@$IP.3:9192
-
-broker.id=$ID
-listeners=PLAINTEXT://$IP.$ID:9092,CONTROLLER://$IP.$ID:9192
-EOF
+lines=(
+"log.dirs=/home/user/kafka-data"
+"process.roles=broker,controller"
+"controller.listener.names=CONTROLLER"
+"listener.security.protocol.map=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+"controller.quorum.voters=1@${IP}.1:9192,2@${IP}.2:9192,3@${IP}.3:9192"
+"broker.id=${ID}"
+"listeners=PLAINTEXT://${IP}.${ID}:9092,CONTROLLER://${IP}.${ID}:9192"
 )
+config_file=~/config/kafka.properties
 
-if ! grep -Fq "$CONFIG_LINES" ~/config/kafka.properties; then
-  echo "$CONFIG_LINES" >> ~/config/kafka.properties
-  echo "Configured Kafka properties."
-else
-  echo "Kafka properties already configured."
-fi
+add_line_if_not_exists() {
+    local line="$1"
+    if ! grep -Fxq "$line" "$config_file"; then
+        echo "$line" >> "$config_file"
+    fi
+}
+
+# Add each line to the configuration file if it doesn't already exist
+for line in "${lines[@]}"; do
+    add_line_if_not_exists "$line"
+done
+
 
 echo "Formatting Kafka storage…"
 ~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
