@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Query the user to confirm the deletion
 echo "Are you sure you want to delete all Kafka data and configurations? (YES/NO)"

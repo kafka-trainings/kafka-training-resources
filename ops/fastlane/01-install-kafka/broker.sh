@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # Cluster ID is the first argument
 KAFKA_CLUSTER_ID=$1
