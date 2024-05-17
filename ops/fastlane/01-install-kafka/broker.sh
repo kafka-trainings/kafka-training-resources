@@ -47,4 +47,4 @@ else
   ~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
 fi
 echo "Starting Kafka broker…"
-~/kafka/bin/kafka-server-start.sh ~/config/kafka.properties
+~/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
