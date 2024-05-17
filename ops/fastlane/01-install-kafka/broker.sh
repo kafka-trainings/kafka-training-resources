@@ -13,7 +13,7 @@ cd ~/config
 cp ~/kafka/config/server.properties ~/config/kafka.properties
 ID=$(hostname | grep -oE '[0-9]+$')
 
-CONFIG_LINES=$(cat &lt;&lt;EOF
+CONFIG_LINES=$(cat <<EOF
 log.dirs=/home/user/kafka-data
 process.roles=broker,controller
 controller.listener.names=CONTROLLER
