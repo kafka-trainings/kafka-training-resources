@@ -13,6 +13,7 @@ mkdir -p ~/kafka-data ~/config
 cd ~/config
 cp ~/kafka/config/server.properties ~/config/kafka.properties
 ID=$(hostname | grep -oE '[0-9]+$')
+IP=$(hostname -I | grep -o "10\.[0-9]*\.[0-9]*")
 
 lines=(
 "log.dirs=/home/user/kafka-data"
@@ -46,4 +47,4 @@ else
   ~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
 fi
 echo "Starting Kafka broker…"
-~/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
+~/kafka/bin/kafka-server-start.sh ~/config/kafka.properties
