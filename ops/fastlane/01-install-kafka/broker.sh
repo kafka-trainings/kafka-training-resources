@@ -38,7 +38,12 @@ for line in "${lines[@]}"; do
 done
 
 
-echo "Formatting Kafka storage…"
-~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
+# Check if it is already formatted
+if [ -f ~/kafka-data/meta.properties ]; then
+  echo "Kafka storage already formatted…"
+else
+  echo "Formatting Kafka storage…"
+  ~/kafka/bin/kafka-storage.sh format -t $KAFKA_CLUSTER_ID -c ~/config/kafka.properties
+fi
 echo "Starting Kafka broker…"
 ~/kafka/bin/kafka-server-start.sh -daemon ~/config/kafka.properties
