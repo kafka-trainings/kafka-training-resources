@@ -5,6 +5,7 @@ metadata:
   namespace: kafka
   labels:
     app: strimzi
+    prometheus: "true"
 spec:
   selector:
     matchLabels:
@@ -20,6 +21,7 @@ metadata:
   namespace: kafka
   labels:
     app: strimzi
+    prometheus: "true"
 spec:
   selector:
     matchLabels:
@@ -35,6 +37,7 @@ metadata:
   namespace: kafka
   labels:
     app: strimzi
+    prometheus: "true"
 spec:
   selector:
     matchLabels:
@@ -50,6 +53,7 @@ metadata:
   namespace: kafka
   labels:
     app: strimzi
+    prometheus: "true"
 spec:
   selector:
     matchExpressions:

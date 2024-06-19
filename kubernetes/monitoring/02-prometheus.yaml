@@ -48,7 +48,8 @@ spec:
   replicas: 1
   serviceAccountName: prometheus-server
   podMonitorSelector:
-    matchLabels: { } # An empty label selector matches all objects
+    matchLabels:
+      prometheus: "true"
   serviceMonitorSelector: { }
   resources:
     requests:
