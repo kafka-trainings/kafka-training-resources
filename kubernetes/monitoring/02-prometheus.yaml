@@ -65,3 +65,19 @@ spec:
   additionalScrapeConfigs:
     name: additional-scrape-configs
     key: prometheus-additional.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-prometheus
+  namespace: monitoring
+spec:
+  type: NodePort
+  ports:
+    - name: web
+      nodePort: 30900
+      port: 9090
+      protocol: TCP
+      targetPort: web
+  selector:
+    prometheus: main
