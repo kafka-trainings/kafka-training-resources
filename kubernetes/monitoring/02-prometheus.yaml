@@ -47,17 +47,17 @@ metadata:
 spec:
   replicas: 1
   serviceAccountName: prometheus-server
-  podMonitorSelector:
-    matchLabels:
-      prometheus: "true"
+  podMonitorNamespaceSelector: { }
+  podMonitorSelector: {}
+  serviceMonitorNamespaceSelector: { }
   serviceMonitorSelector: { }
   resources:
     requests:
       memory: 400Mi
   enableAdminAPI: false
-  ruleSelector:
-    matchLabels:
-      role: alert-rules
+  #ruleSelector:
+  #  matchLabels:
+  #    role: alert-rules
   # alerting:
   #   alertmanagers:
   #     - namespace: monitoring
