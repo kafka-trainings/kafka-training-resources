@@ -1,0 +1,86 @@
+# cruise-control-ui.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cruise-control-ui
+  labels:
+    app: cruise-control-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cruise-control-ui
+  template:
+    metadata:
+      labels:
+        app: cruise-control-ui
+    spec:
+      containers:
+        - name: cruise-control-ui
+          image: ghcr.io/kafka-trainings/example-project/cruisecontrol_ui:latest
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: cruise-control-ui
+              mountPath: /etc/nginx/conf.d
+            - name: cluster-ca-certs
+              mountPath: /etc/ssl/certs/
+      volumes:
+        - name: cruise-control-ui
+          configMap:
+            name: cruise-control-ui
+        - name: api-auth-config
+          secret:
+            defaultMode: 292
+            secretName: kafka-cruise-control-api
+        - name: cluster-ca-certs
+          secret:
+            defaultMode: 292
+            secretName: kafka-cruise-control-certs
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cruise-control-ui
+  labels:
+    app: cruise-control-ui
+data:
+  default.conf: |2+
+        server {
+          listen 9090 ssl;
+          server_name localhost; 
+          ssl_certificate     /etc/ssl/certs/cruise-control.crt;
+          ssl_certificate_key /etc/ssl/certs/cruise-control.key;
+    
+          location / {
+              root   /usr/share/nginx/html;
+              index  index.html index.htm;
+          }
+  
+          location /kafkacruisecontrol/ {
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_buffering off;
+              proxy_pass https://kafka-cruise-control:9090/kafkacruisecontrol/;
+              proxy_ssl_verify              off;
+          }
+    
+          error_page   500 502 503 504  /50x.html;
+          location = /50x.html {
+              root   /usr/share/nginx/html;
+          }
+        }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cruise-control-ui
+  labels:
+    app: cruise-control-ui
+spec:
+  selector:
+    app: cruise-control-ui
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
