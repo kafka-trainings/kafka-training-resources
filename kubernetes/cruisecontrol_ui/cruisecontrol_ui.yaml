@@ -47,10 +47,8 @@ metadata:
 data:
   default.conf: |2+
         server {
-          listen 9090 ssl;
+          listen 9090;
           server_name localhost; 
-          ssl_certificate     /etc/ssl/certs/cruise-control.crt;
-          ssl_certificate_key /etc/ssl/certs/cruise-control.key;
     
           location / {
               root   /usr/share/nginx/html;
