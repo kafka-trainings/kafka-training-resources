@@ -1,0 +1,42 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: mirror-maker-source
+  labels:
+    strimzi.io/cluster: kafka
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      # MirrorSourceConnector
+      - resource: # Not needed if offset-syncs.topic.location=target
+          type: topic
+          name: mm2-offset-syncs.my-target-cluster.internal
+        operations:
+          - Create
+          - DescribeConfigs
+          - Read
+          - Write
+      - resource: # Needed for every topic which is mirrored
+          type: topic
+          name: "*"
+        operations:
+          - DescribeConfigs
+          - Read
+      # MirrorCheckpointConnector
+      - resource:
+          type: cluster
+        operations:
+          - Describe
+      - resource: # Needed for every group for which offsets are synced
+          type: group
+          name: "*"
+        operations:
+          - Describe
+      - resource: # Not needed if offset-syncs.topic.location=target
+          type: topic
+          name: mm2-offset-syncs.my-target-cluster.internal
+        operations:
+          - Read
