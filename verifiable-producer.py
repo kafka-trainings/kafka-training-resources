@@ -29,7 +29,6 @@ def delivery_report(err, msg):
         delivery_report.header_printed = True
 
     # Print table row
-    print(key_str, value_str)
     partition_str = str(msg.partition()) if msg.partition() is not None else "?"
     offset_str = str(msg.offset()) if msg.offset() is not None else "?"
     print(f"│ {partition_str:^9} │ {offset_str:>12} │ {key_str:<5} │ {value_str:>10} │")
