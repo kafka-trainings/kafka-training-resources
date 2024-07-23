@@ -6,22 +6,43 @@ import time
 from confluent_kafka import Producer
 
 
+def print_table_header():
+    print("┌──────────┬─────────────────┬───────────┬────────────┬─────────────────┬──────────────────────┐")
+    print("│ Status   │ Topic           │ Partition │ Offset     │ Key             │ Value                │")
+    print("├──────────┼─────────────────┼───────────┼────────────┼─────────────────┼──────────────────────┤")
+
 def delivery_report(err, msg):
     """Called once for each message produced to indicate delivery result."""
+    key_str = msg.key().decode("utf-8") if msg.key() else "None"
+    value_str = msg.value().decode("utf-8") if msg.value() else "None"
+
     if err:
-        status = "error"
+        status = "ERROR"
+        print(f"Message delivery failed: {err}")
+        return
     else:
-        status = "success"
+        status = "SUCCESS"
+
+    # Print table header if it's the first message
+    if not hasattr(delivery_report, "header_printed"):
+        print_table_header()
+        delivery_report.header_printed = True
+
+    # Print table row
+    status_str = "\033[92m✔\033[0m" if status == "SUCCESS" else "\033[91m✘\033[0m"
+    print(f"│ {status_str:^8} │ {msg.topic():<15} │ {msg.partition():^9} │ {msg.offset():^10} │ {key_str:<15} │ {value_str:<20} │")
+
+    # Print JSON report
     report = {
         "timestamp": int(time.time() * 1000),
         "topic": msg.topic(),
         "partition": msg.partition(),
         "offset": msg.offset(),
-        "key": msg.key().decode("utf-8") if msg.key() else None,
-        "value": msg.value().decode("utf-8"),
+        "key": key_str,
+        "value": value_str,
         "status": status
     }
-    print(json.dumps(report))
+    #print(json.dumps(report))
 
 
 def main():
