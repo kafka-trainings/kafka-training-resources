@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 import argparse
-import json
+import signal
+import sys
 import time
 
 from confluent_kafka import Producer
 
 
 def print_table_header():
-    print("┌────────┬───────────┬────────┬───────┬───────┐")
-    print("│ Status │ Partition │ Offset │ Key   │ Value │")
-    print("├────────┼───────────┼────────┼───────┼───────┤")
+    print("┌────────┬───────────┬──────────────┬───────┬────────────┐")
+    print("│ Status │ Partition │ Offset       │ Key   │ Value      │")
+    print("├────────┼───────────┼──────────────┼───────┼────────────┤")
+
 
 def delivery_report(err, msg):
     """Called once for each message produced to indicate delivery result."""
@@ -30,22 +32,14 @@ def delivery_report(err, msg):
 
     # Print table row
     status_str = "\033[92m✔\033[0m" if status == "SUCCESS" else "\033[91m✘\033[0m"
-    print(f"│ {status_str:^15} │ {msg.partition():^9} │ {msg.offset():>6} │ {key_str:<5} │ {value_str:>5} │")
+    print(f"│ {status_str:^15} │ {msg.partition():^9} │ {msg.offset():>12} │ {key_str:<5} │ {value_str:>10} │")
 
-    # Print JSON report
-    report = {
-        "timestamp": int(time.time() * 1000),
-        "topic": msg.topic(),
-        "partition": msg.partition(),
-        "offset": msg.offset(),
-        "key": key_str,
-        "value": value_str,
-        "status": status
-    }
-    #print(json.dumps(report))
+
+producer = None
 
 
 def main():
+    global producer
     parser = argparse.ArgumentParser(description="Kafka Verifiable Producer")
     parser.add_argument("--topic", required=True, help="Produce messages to this topic.")
     parser.add_argument("--max-messages", type=int, default=-1,
@@ -77,28 +71,39 @@ def main():
     key_counter = 0
     message_counter = 0
     start_time = time.time()
+    try:
+        while args.max_messages == -1 or message_counter < args.max_messages:
+            if args.repeating_keys:
+                key = str(key_counter).encode("utf-8")
+                key_counter = (key_counter + 1) % args.repeating_keys
+            else:
+                key = None
 
-    while args.max_messages == -1 or message_counter < args.max_messages:
-        if args.repeating_keys:
-            key = str(key_counter).encode("utf-8")
-            key_counter = (key_counter + 1) % args.repeating_keys
-        else:
-            key = None
+            value = f"{args.value_prefix}.{message_counter}" if args.value_prefix else str(message_counter)
+            producer.produce(args.topic, key=key, value=value, callback=delivery_report)
+            producer.poll(0)
 
-        value = f"{args.value_prefix}.{message_counter}" if args.value_prefix else str(message_counter)
-        producer.produce(args.topic, key=key, value=value, callback=delivery_report)
-        producer.poll(0)
+            message_counter += 1
 
-        message_counter += 1
+            if args.throughput > 0:
+                elapsed_time = time.time() - start_time
+                expected_time = message_counter / args.throughput
+                if elapsed_time < expected_time:
+                    time.sleep(expected_time - elapsed_time)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        producer.flush()
 
-        if args.throughput > 0:
-            elapsed_time = time.time() - start_time
-            expected_time = message_counter / args.throughput
-            if elapsed_time < expected_time:
-                time.sleep(expected_time - elapsed_time)
 
-    producer.flush()
+def signal_handler(sig, frame):
+    global producer
+    print("\nStoping the producer...")
+    if producer:
+        producer.flush()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
     main()
