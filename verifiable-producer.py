@@ -31,7 +31,7 @@ def delivery_report(err, msg):
     # Print table row
     partition_str = str(msg.partition()) if msg.partition() is not None else "?"
     offset_str = str(msg.offset()) if msg.offset() is not None else "?"
-    timestamp_str = str(msg.timestamp()) if msg.timestamp() is not None else "?"
+    timestamp_str = str(msg.timestamp()[1]) if msg.timestamp()[1] is not None else "?"
     print(f"│ {partition_str:^9} │ {offset_str:>12} │ {key_str:<5} │ {value_str:>10} │ {timestamp_str:>9} │")
 
 
