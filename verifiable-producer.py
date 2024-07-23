@@ -8,9 +8,9 @@ from confluent_kafka import Producer
 
 
 def print_table_header():
-    print("┌────────┬───────────┬──────────────┬───────┬────────────┐")
-    print("│ Status │ Partition │ Offset       │ Key   │ Value      │")
-    print("├────────┼───────────┼──────────────┼───────┼────────────┤")
+    print("┌───────────┬──────────────┬───────┬────────────┐")
+    print("│ Partition │ Offset       │ Key   │ Value      │")
+    print("├───────────┼──────────────┼───────┼────────────┤")
 
 
 def delivery_report(err, msg):
@@ -19,11 +19,9 @@ def delivery_report(err, msg):
     value_str = msg.value().decode("utf-8") if msg.value() else "None"
 
     if err:
-        status = "ERROR"
-        print(f"Message delivery failed: {err}")
+        print("Message delivery failed:")
+        print(err)
         return
-    else:
-        status = "SUCCESS"
 
     # Print table header if it's the first message
     if not hasattr(delivery_report, "header_printed"):
@@ -31,8 +29,7 @@ def delivery_report(err, msg):
         delivery_report.header_printed = True
 
     # Print table row
-    status_str = "\033[92m✔\033[0m" if status == "SUCCESS" else "\033[91m✘\033[0m"
-    print(f"│ {status_str:^15} │ {msg.partition():^9} │ {msg.offset():>12} │ {key_str:<5} │ {value_str:>10} │")
+    print(f"│ {msg.partition():^9} │ {msg.offset():>12} │ {key_str:<5} │ {value_str:>10} │")
 
 
 producer = None
