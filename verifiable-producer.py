@@ -94,16 +94,8 @@ def main():
         pass
     finally:
         producer.flush()
-
-
-def signal_handler(sig, frame):
-    global producer
-    print("\nStoping the producer...")
-    if producer:
-        producer.flush()
-    sys.exit(0)
-
+        producer.close()
+        sys.exit(0)
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, signal_handler)
     main()
