@@ -30,7 +30,7 @@ def delivery_report(err, msg):
 
     # Print table row
     status_str = "\033[92m✔\033[0m" if status == "SUCCESS" else "\033[91m✘\033[0m"
-    print(f"│ {status_str:^5} │ {msg.partition():^9} │ {msg.offset():^6} │ {key_str:<5} │ {value_str:<5} │")
+    print(f"│ {status_str:^15} │ {msg.partition():^9} │ {msg.offset():>6} │ {key_str:<5} │ {value_str:>5} │")
 
     # Print JSON report
     report = {
