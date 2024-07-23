@@ -8,9 +8,9 @@ from confluent_kafka import Producer
 
 
 def print_table_header():
-    print("┌───────────┬──────────────┬───────┬────────────┬───────────┐")
-    print("│ Partition │ Offset       │ Key   │ Value      │ Timestamp │")
-    print("├───────────┼──────────────┼───────┼────────────┼───────────┤")
+    print("┌──────┬──────────────┬───────┬────────────┬───────────┐")
+    print("│ Part │ Offset       │ Key   │ Value      │ Timestamp │")
+    print("├──────┼──────────────┼───────┼────────────┼───────────┤")
 
 
 def delivery_report(err, msg):
@@ -32,7 +32,7 @@ def delivery_report(err, msg):
     partition_str = str(msg.partition()) if msg.partition() is not None else "?"
     offset_str = str(msg.offset()) if msg.offset() is not None else "?"
     timestamp_str = str(msg.timestamp()[1]) if msg.timestamp()[1] is not None else "?"
-    print(f"│ {partition_str:^9} │ {offset_str:>12} │ {key_str:<5} │ {value_str:>10} │ {timestamp_str:>9} │")
+    print(f"│ {partition_str:^4} │ {offset_str:>12} │ {key_str:<5} │ {value_str:>10} │ {timestamp_str:>9} │")
 
 
 producer = None
