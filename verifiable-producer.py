@@ -94,7 +94,6 @@ def main():
         pass
     finally:
         producer.flush()
-        producer.close()
         sys.exit(0)
 
 if __name__ == "__main__":
