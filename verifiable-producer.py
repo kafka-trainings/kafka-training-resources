@@ -7,9 +7,9 @@ from confluent_kafka import Producer
 
 
 def print_table_header():
-    print("┌──────────┬─────────────────┬───────────┬────────────┬─────────────────┬──────────────────────┐")
-    print("│ Status   │ Topic           │ Partition │ Offset     │ Key             │ Value                │")
-    print("├──────────┼─────────────────┼───────────┼────────────┼─────────────────┼──────────────────────┤")
+    print("┌────────┬───────────┬────────┬───────┬───────┐")
+    print("│ Status │ Partition │ Offset │ Key   │ Value │")
+    print("├────────┼───────────┼────────┼───────┼───────┤")
 
 def delivery_report(err, msg):
     """Called once for each message produced to indicate delivery result."""
@@ -30,7 +30,7 @@ def delivery_report(err, msg):
 
     # Print table row
     status_str = "\033[92m✔\033[0m" if status == "SUCCESS" else "\033[91m✘\033[0m"
-    print(f"│ {status_str:^8} │ {msg.topic():<15} │ {msg.partition():^9} │ {msg.offset():^10} │ {key_str:<15} │ {value_str:<20} │")
+    print(f"│ {status_str:^5} │ {msg.partition():^9} │ {msg.offset():^6} │ {key_str:<5} │ {value_str:<5} │")
 
     # Print JSON report
     report = {
