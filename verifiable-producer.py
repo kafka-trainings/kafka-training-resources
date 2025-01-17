@@ -60,6 +60,10 @@ def main():
             "partitioner": "murmur2_random",
             "acks": args.acks}
 
+    # Enable idempotence when acks=all or acks=-1
+    if args.acks in ['all', -1]:
+        conf['enable.idempotence'] = True
+
     if args.producer_config:
         with open(args.producer_config, "r") as f:
             for line in f:
