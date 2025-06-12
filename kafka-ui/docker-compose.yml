@@ -11,5 +11,7 @@ services:
       SERVER_PORT: 7005
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: connect
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://localhost:8090
+      # TODO: Uncomment this for the schema management lab
+      # KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://localhost:8081
     network_mode: host
     restart: always
