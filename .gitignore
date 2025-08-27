@@ -1,2 +1,4 @@
 *\#*
 *~connect
+*.db
+__pycache__
