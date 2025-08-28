@@ -2,7 +2,7 @@
     "name": "inventory-source-connector",
     "config": {
         "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
-        "connection.url": "jdbc:sqlite:/home/user/training/designing-eda/inventory.db",
+        "connection.url": "jdbc:sqlite:/home/user/training/designing-eda/connect/inventory.db",
         "table.whitelist": "inventory",
         "mode": "incrementing",
         "incrementing.column.name": "id",
