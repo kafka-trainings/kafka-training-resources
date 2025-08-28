@@ -15,9 +15,26 @@ def get_db():
 
 def init_db():
     with get_db() as db:
-        db.execute('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name TEXT, description TEXT)')
-        db.execute('CREATE TABLE IF NOT EXISTS prices (product_id INTEGER PRIMARY KEY, price REAL)')
-        db.execute('CREATE TABLE IF NOT EXISTS inventory (product_id INTEGER PRIMARY KEY, amount INTEGER, warehouse TEXT)')
+        db.execute('''CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY, 
+            name TEXT, 
+            description TEXT,
+            created_at TEXT,
+            updated_at TEXT
+        )''')
+        db.execute('''CREATE TABLE IF NOT EXISTS prices (
+            product_id INTEGER PRIMARY KEY, 
+            price REAL,
+            created_at TEXT,
+            updated_at TEXT
+        )''')
+        db.execute('''CREATE TABLE IF NOT EXISTS inventory (
+            product_id INTEGER PRIMARY KEY, 
+            amount INTEGER, 
+            warehouse TEXT,
+            created_at TEXT,
+            updated_at TEXT
+        )''')
 
 def consume_events():
     consumer = Consumer({
@@ -43,18 +60,18 @@ def consume_events():
             if topic == PRODUCT_TOPIC:
                 # Only store fields needed for webshop (no internal_sku)
                 db.execute(
-                    'INSERT OR REPLACE INTO products (id, name, description) VALUES (?, ?, ?)',
-                    (data['id'], data['name'], data['description'])
+                    'INSERT OR REPLACE INTO products (id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+                    (data['id'], data['name'], data['description'], data.get('created_at'), data.get('updated_at'))
                 )
             elif topic == PRICE_TOPIC:
                 db.execute(
-                    'INSERT OR REPLACE INTO prices (product_id, price) VALUES (?, ?)',
-                    (data['product_id'], data['price'])
+                    'INSERT OR REPLACE INTO prices (product_id, price, created_at, updated_at) VALUES (?, ?, ?, ?)',
+                    (data['product_id'], data['price'], data.get('created_at'), data.get('updated_at'))
                 )
             elif topic == INVENTORY_TOPIC:
                 db.execute(
-                    'INSERT OR REPLACE INTO inventory (product_id, amount, warehouse) VALUES (?, ?, ?)',
-                    (data['product_id'], data['amount'], data['warehouse'])
+                    'INSERT OR REPLACE INTO inventory (product_id, amount, warehouse, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+                    (data['product_id'], data['amount'], data['warehouse'], data.get('created_at'), data.get('updated_at'))
                 )
 
 @app.route('/products')
