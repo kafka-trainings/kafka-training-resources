@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import sqlite3
 import json
 import time
-import datetime
+from datetime import datetime
 from confluent_kafka import Producer
 from config import PRICE_SERVICE_PORT, KAFKA_BOOTSTRAP_SERVERS, PRICE_TOPIC
 
@@ -27,7 +27,7 @@ def init_db():
             updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )''')
 
-        now = datetime.datetime.now(datetime.UTC).isoformat() + 'Z'
+        now = datetime.utcnow().isoformat() + 'Z'
         
         prices = [
             (1, 999.99, now, now),
@@ -62,7 +62,7 @@ def get_price(product_id):
 def create_price():
     time.sleep(1) # Calculate price using black magic
     data = request.json
-    now = datetime.datetime.now(datetime.UTC).isoformat() + 'Z'
+    now = datetime.utcnow().isoformat() + 'Z'
     
     with get_db() as db:
         # Check if price exists to set correct created_at
