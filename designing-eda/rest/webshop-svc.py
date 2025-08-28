@@ -11,10 +11,13 @@ def fetch_products():
     return resp.json()
 
 def fetch_price(product_id):
-    resp = requests.get(f'{PRICE_SERVICE_URL}/prices/{product_id}', timeout=5)
-    if resp.status_code != 200:
-        raise Exception(f"Price service unavailable for product {product_id}")
-    return resp.json().get('price')
+    try:
+        resp = requests.get(f'{PRICE_SERVICE_URL}/prices/{product_id}', timeout=5)
+        if resp.status_code != 200:
+            return None
+        return resp.json().get('price')
+    except:
+        return None
 
 @app.route('/products')
 def get_products():
@@ -34,8 +37,8 @@ def get_product(product_id):
         product['price'] = fetch_price(product_id)
         product.pop('internal_sku', None)  # Remove internal info
         return jsonify(product)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except:
+        return jsonify({'error': 'Product service unavailable'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=WEBSHOP_SERVICE_PORT)
