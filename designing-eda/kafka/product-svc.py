@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 import sqlite3
 import json
-from datetime import datetime
 from confluent_kafka import Producer
 from config import PRODUCT_SERVICE_PORT, KAFKA_BOOTSTRAP_SERVERS, PRODUCT_TOPIC
 
