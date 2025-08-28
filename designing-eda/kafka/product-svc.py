@@ -20,7 +20,7 @@ def get_db():
 def init_db():
     with get_db() as db:
         db.execute('''CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
             name TEXT, 
             description TEXT, 
             internal_sku TEXT,
@@ -29,11 +29,12 @@ def init_db():
         )''')
         
         products = [
-            (1, 'Laptop', 'Gaming laptop', 'INT-LAP-001'),
-            (2, 'Mouse', 'Wireless mouse', 'INT-MOU-002'), 
-            (3, 'Keyboard', 'Mechanical keyboard', 'INT-KEY-003')
+            ('Laptop', 'Gaming laptop', 'INT-LAP-001'),
+            ('Mouse', 'Wireless mouse', 'INT-MOU-002'), 
+            ('Keyboard', 'Mechanical keyboard', 'INT-KEY-003')
         ]
-        db.executemany('INSERT OR IGNORE INTO products (id, name, description, internal_sku) VALUES (?, ?, ?, ?)', products)
+        for p in products:
+            db.execute('INSERT OR IGNORE INTO products (name, description, internal_sku) VALUES (?, ?, ?)', p)
         
         # Publish initial products to Kafka (get timestamps from DB)
         for row in db.execute('SELECT * FROM products'):

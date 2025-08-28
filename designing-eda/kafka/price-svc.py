@@ -2,7 +2,6 @@ from flask import Flask, request, jsonify
 import sqlite3
 import json
 import time
-from datetime import datetime
 from confluent_kafka import Producer
 from config import PRICE_SERVICE_PORT, KAFKA_BOOTSTRAP_SERVERS, PRICE_TOPIC
 
@@ -21,28 +20,28 @@ def get_db():
 def init_db():
     with get_db() as db:
         db.execute('''CREATE TABLE IF NOT EXISTS prices (
-            product_id INTEGER PRIMARY KEY, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER, 
             price REAL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             updated_at TEXT DEFAULT CURRENT_TIMESTAMP
         )''')
 
-        now = datetime.utcnow().isoformat() + 'Z'
-        
         prices = [
-            (1, 999.99, now, now),
-            (2, 29.99, now, now),
-            (3, 149.99, now, now)
+            (1, 999.99),
+            (2, 29.99),
+            (3, 149.99)
         ]
-        db.executemany('INSERT OR IGNORE INTO prices VALUES (?, ?, ?, ?)', prices)
-        
-        # Publish initial prices to Kafka
         for p in prices:
+            db.execute('INSERT OR IGNORE INTO prices (product_id, price) VALUES (?, ?)', p)
+        
+        # Publish initial prices to Kafka (get timestamps from DB)
+        for row in db.execute('SELECT * FROM prices'):
             event = {
-                'product_id': p[0], 
-                'price': p[1], 
-                'created_at': p[2],
-                'updated_at': p[3],
+                'product_id': row['product_id'], 
+                'price': row['price'], 
+                'created_at': row['created_at'],
+                'updated_at': row['updated_at'],
                 'action': 'created'
             }
             producer.produce(PRICE_TOPIC, json.dumps(event))
@@ -62,29 +61,28 @@ def get_price(product_id):
 def create_price():
     time.sleep(1) # Calculate price using black magic
     data = request.json
-    now = datetime.utcnow().isoformat() + 'Z'
     
     with get_db() as db:
-        # Check if price exists to set correct created_at
-        existing = db.execute('SELECT created_at FROM prices WHERE product_id = ?', (data['product_id'],)).fetchone()
-        created_at = existing['created_at'] if existing else now
+        # Insert new price - id is auto-generated
+        id = db.execute('INSERT INTO prices (product_id, price) VALUES (?, ?)', 
+                       (data['product_id'], data['price'])).lastrowid
         
-        db.execute('''INSERT OR REPLACE INTO prices (product_id, price, created_at, updated_at) 
-                     VALUES (?, ?, ?, ?)''', 
-                  (data['product_id'], data['price'], created_at, now))
+        # Get the inserted row with all fields
+        row = db.execute('SELECT * FROM prices WHERE id = ?', (id,)).fetchone()
     
     # Publish to Kafka
     event = {
-        'product_id': data['product_id'], 
-        'price': data['price'], 
-        'created_at': created_at,
-        'updated_at': now,
-        'action': 'updated'
+        'id': row['id'],
+        'product_id': row['product_id'], 
+        'price': row['price'], 
+        'created_at': row['created_at'],
+        'updated_at': row['updated_at'],
+        'action': 'created'
     }
-    producer.produce(PRICE_TOPIC, key=str(data['product_id']), value=json.dumps(event))
+    producer.produce(PRICE_TOPIC, key=str(row['product_id']), value=json.dumps(event))
     producer.flush()
     
-    return jsonify(data), 201
+    return jsonify(dict(row)), 201
 
 if __name__ == '__main__':
     init_db()
