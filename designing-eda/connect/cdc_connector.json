@@ -10,6 +10,8 @@
         "plugin.name": "pgoutput",
         "topic.prefix": "cdc",
         "table.include.list": "public.products",
-        "publication.autocreate.mode": "filtered"
+        "publication.autocreate.mode": "filtered",
+        "transforms": "unwrap",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState"
     }
 }
