@@ -18,14 +18,15 @@ def get_db():
 def init_db():
     with get_db() as db:
         with db.cursor() as cur:
-            cur.execute('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY, name VARCHAR(255), description TEXT, internal_sku VARCHAR(255))')
+            cur.execute('CREATE TABLE IF NOT EXISTS products (id SERIAL PRIMARY KEY, name VARCHAR(255), description TEXT, internal_sku VARCHAR(255))')
             products = [
-                (1, 'Laptop', 'Gaming laptop', 'INT-LAP-001'),
-                (2, 'Mouse', 'Wireless mouse', 'INT-MOU-002'), 
-                (3, 'Keyboard', 'Mechanical keyboard', 'INT-KEY-003')
+                ('Laptop', 'Gaming laptop', 'INT-LAP-001'),
+                ('Mouse', 'Wireless mouse', 'INT-MOU-002'), 
+                ('Keyboard', 'Mechanical keyboard', 'INT-KEY-003')
             ]
             for p in products:
-                cur.execute('INSERT INTO products VALUES (%s, %s, %s, %s) ON CONFLICT DO NOTHING', p)
+                cur.execute('''INSERT INTO products (name, description, internal_sku) 
+                              VALUES (%s, %s, %s)''', p)
 
 @app.route('/products')
 def get_products():
@@ -46,8 +47,11 @@ def get_product(id):
 def create_product():
     data = request.json
     with get_db() as db:
-        id = db.execute('INSERT INTO products (name, description) VALUES (?, ?)', 
-                       (data['name'], data.get('description', ''))).lastrowid
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute('INSERT INTO products (name, description, internal_sku) VALUES (%s, %s, %s) RETURNING id', 
+                       (data['name'], data.get('description', ''), data.get('internal_sku', '')))
+            row = cur.fetchone()
+            id = row['id']
     return jsonify({'id': id, **data}), 201
 
 if __name__ == '__main__':

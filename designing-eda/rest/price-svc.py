@@ -34,7 +34,13 @@ def get_prices():
     with get_db() as db:
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute('SELECT * FROM prices')
-            return jsonify([dict(row) for row in cur.fetchall()])
+            prices = []
+            for row in cur.fetchall():
+                price = dict(row)
+                if price['price']:
+                    price['price'] = float(price['price'])
+                prices.append(price)
+            return jsonify(prices)
 
 @app.route('/prices/<int:product_id>')
 def get_price(product_id):
@@ -43,15 +49,27 @@ def get_price(product_id):
         with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute('SELECT * FROM prices WHERE product_id = %s', (product_id,))
             row = cur.fetchone()
-            return jsonify(dict(row)) if row else ('', 404)
+            if not row:
+                return ('', 404)
+            price = dict(row)
+            if price['price']:
+                price['price'] = float(price['price'])
+            return jsonify(price)
 
 @app.route('/prices', methods=['POST'])
 def create_price():
     data = request.json
     with get_db() as db:
-        db.execute('INSERT OR REPLACE INTO prices (product_id, price) VALUES (?, ?)', 
-                  (data['product_id'], data['price']))
-    return jsonify(data), 201
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute('''INSERT INTO prices (product_id, price) VALUES (%s, %s) 
+                          ON CONFLICT (product_id) DO UPDATE SET price = EXCLUDED.price 
+                          RETURNING *''', 
+                       (data['product_id'], data['price']))
+            row = cur.fetchone()
+            price = dict(row)
+            if price['price']:
+                price['price'] = float(price['price'])
+    return jsonify(price), 201
 
 if __name__ == '__main__':
     init_db()

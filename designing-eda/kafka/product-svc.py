@@ -55,7 +55,7 @@ def init_db():
                     'updated_at': row[5].isoformat() if row[5] else None,
                     'action': 'created'
                 }
-                producer.produce(PRODUCT_TOPIC, json.dumps(event))
+                producer.produce(PRODUCT_TOPIC, key=str(row[0]), value=json.dumps(event))
             producer.flush()
 
 @app.route('/products')
