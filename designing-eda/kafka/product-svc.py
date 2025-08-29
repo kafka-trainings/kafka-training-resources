@@ -73,6 +73,49 @@ def get_product(id):
             row = cur.fetchone()
             return jsonify(dict(row)) if row else ('', 404)
 
+@app.route('/products/<int:id>', methods=['PUT'])
+def update_product(id):
+    data = request.json
+    fields = []
+    values = []
+    if 'name' in data:
+        fields.append('name = %s')
+        values.append(data['name'])
+    if 'description' in data:
+        fields.append('description = %s')
+        values.append(data['description'])
+    if 'internal_sku' in data:
+        fields.append('internal_sku = %s')
+        values.append(data['internal_sku'])
+    if not fields:
+        return jsonify({'error': 'No fields to update'}), 400
+    values.append(id)
+    with get_db() as db:
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute(f'UPDATE products SET {", ".join(fields)} WHERE id = %s RETURNING *', values)
+            row = cur.fetchone()
+            if not row:
+                return jsonify({'error': 'Product not found'}), 404
+            event = {
+                'id': row['id'], 
+                'name': row['name'], 
+                'description': row['description'], 
+                'internal_sku': row['internal_sku'],
+                'created_at': row['created_at'].isoformat() if row['created_at'] else None,
+                'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
+            }
+            producer.produce(PRODUCT_TOPIC, key=str(row['id']), value=json.dumps(event))
+            return jsonify(dict(row))
+
+@app.route('/products/<int:id>', methods=['DELETE'])
+def delete_product(id):
+    with get_db() as db:
+        with db.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute('DELETE FROM products WHERE id = %s RETURNING *', (id,))
+            row = cur.fetchone()
+            producer.produce(PRODUCT_TOPIC, key=str(row['id']), value=None)
+            return jsonify(dict(row)) if row else ('', 404)
+        
 @app.route('/products', methods=['POST'])
 def create_product():
     data = request.json
@@ -91,8 +134,7 @@ def create_product():
         'description': row['description'], 
         'internal_sku': row['internal_sku'],
         'created_at': row['created_at'].isoformat() if row['created_at'] else None,
-        'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None,
-        'action': 'created'
+        'updated_at': row['updated_at'].isoformat() if row['updated_at'] else None
     }
     producer.produce(PRODUCT_TOPIC, key=str(row['id']), value=json.dumps(event))
     producer.flush()
