@@ -1,0 +1,15 @@
+{
+    "name": "debezium-products-cdc",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "localhost",
+        "database.port": "5432",
+        "database.user": "cdcuser",
+        "database.password": "password",
+        "database.dbname": "products_db",
+        "plugin.name": "pgoutput",
+        "topic.prefix": "cdc",
+        "table.include.list": "public.products",
+        "publication.autocreate.mode": "filtered"
+    }
+}
