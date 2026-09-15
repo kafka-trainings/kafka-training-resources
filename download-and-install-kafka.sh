@@ -27,4 +27,7 @@ tar xfz "${ARCHIVE}"
 rm "${ARCHIVE}"
 mv "kafka_${FULL_VERSION}" "$HOME/kafka"
 export PATH="$HOME/kafka/bin:$PATH"
-echo "export PATH=$HOME/kafka/bin:\$PATH" >> ~/.bashrc
+
+# Only once, so removing ~/kafka and running again does not stack up lines.
+BASHRC_LINE="export PATH=$HOME/kafka/bin:\$PATH"
+grep -qxF "$BASHRC_LINE" ~/.bashrc 2>/dev/null || echo "$BASHRC_LINE" >> ~/.bashrc
