@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Version of the JDBC connector to install
-VERSION="10.7.6"
+VERSION="10.9.0"
 
 # Check if the JDBC connector already exists
 if [ -d "java/confluentinc-kafka-connect-jdbc-${VERSION}" ]; then
