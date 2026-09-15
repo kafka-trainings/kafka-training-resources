@@ -1,10 +1,35 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 SCALA_VERSION="2.13"
-KAFKA_VERSION="3.9.1"
+KAFKA_VERSION="4.3.1"
 FULL_VERSION="${SCALA_VERSION}-${KAFKA_VERSION}"
-wget "https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_${FULL_VERSION}.tgz"
-tar xfz kafka_${FULL_VERSION}.tgz
-rm kafka_${FULL_VERSION}.tgz
-mv kafka_${FULL_VERSION} ~/kafka
-export PATH=~/kafka/bin:"$PATH"
-echo "export PATH=~/kafka/bin:$PATH" >> ~/.bashrc
+ARCHIVE="kafka_${FULL_VERSION}.tgz"
+
+# Same guard as download-and-install-JDBC-connector.sh. Without it a second run
+# would not rename but move the new directory *into* the existing ~/kafka.
+if [ -d "$HOME/kafka" ]; then
+    echo "Kafka is already installed in ~/kafka"
+    echo "Remove it first if you want to install $KAFKA_VERSION."
+    exit 0
+fi
+
+cd "$HOME"
+
+# dlcdn carries only current releases and is much faster; archive.apache.org
+# keeps every version but is slow. Try the mirror, fall back to the archive so
+# this keeps working once this version ages out of dlcdn. -O, so a leftover
+# file from an aborted run is overwritten instead of being unpacked.
+wget -O "${ARCHIVE}" "https://dlcdn.apache.org/kafka/${KAFKA_VERSION}/${ARCHIVE}" \
+  || wget -O "${ARCHIVE}" "https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/${ARCHIVE}"
+
+tar xfz "${ARCHIVE}"
+rm "${ARCHIVE}"
+mv "kafka_${FULL_VERSION}" "$HOME/kafka"
+export PATH="$HOME/kafka/bin:$PATH"
+
+# Only once, so removing ~/kafka and running again does not stack up lines.
+# The provisioning playbook for the training image matches this line verbatim
+# to clean up older, broken variants - do not reformat it without saying so.
+BASHRC_LINE="export PATH=$HOME/kafka/bin:\$PATH"
+grep -qxF "$BASHRC_LINE" ~/.bashrc 2>/dev/null || echo "$BASHRC_LINE" >> ~/.bashrc
