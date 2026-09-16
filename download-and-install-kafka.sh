@@ -29,7 +29,5 @@ mv "kafka_${FULL_VERSION}" "$HOME/kafka"
 export PATH="$HOME/kafka/bin:$PATH"
 
 # Only once, so removing ~/kafka and running again does not stack up lines.
-# The provisioning playbook for the training image matches this line verbatim
-# to clean up older, broken variants - do not reformat it without saying so.
 BASHRC_LINE="export PATH=$HOME/kafka/bin:\$PATH"
 grep -qxF "$BASHRC_LINE" ~/.bashrc 2>/dev/null || echo "$BASHRC_LINE" >> ~/.bashrc
