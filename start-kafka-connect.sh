@@ -15,6 +15,7 @@ Description=Kafka Connect
 Type=simple
 ExecStart=$HOME/kafka/bin/connect-distributed.sh $HOME/training/config/worker.properties
 Restart=on-failure
+# plugin.path in worker.properties is relative to this directory.
 WorkingDirectory=$HOME
 
 [Install]
